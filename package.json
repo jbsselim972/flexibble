@@ -27,6 +27,7 @@
   "name": "nextjs13_flexibble",
   "private": true,
   "scripts": {
+    "postinstall": "prisma generate",
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
