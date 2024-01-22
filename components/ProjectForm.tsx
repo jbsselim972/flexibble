@@ -1,7 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { ProjectInterface, SessionInterface } from "@/common.types";
+import {
+  ProjectInterface,
+  ProjectWithUserInfo,
+  SessionInterface,
+} from "@/common.types";
 import FormField from "./FormField";
 import { categoryFilters } from "@/constants";
 import CustomMenu from "./CustomMenu";
@@ -13,7 +17,7 @@ import { useRouter } from "next/navigation";
 type Props = {
   type: string;
   session: SessionInterface;
-  project?: ProjectInterface;
+  project?: ProjectWithUserInfo;
 };
 
 const ProjectForm = ({ type, session, project }: Props) => {

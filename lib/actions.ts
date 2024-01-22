@@ -181,11 +181,6 @@ export const updateProject = async (
     updatedForm = { ...form, image: imageUrl.url };
   }
 
-  const variables = {
-    id: projectId,
-    input: updatedForm,
-  };
-
   // client.setHeader("Authorization", `Bearer ${token}`);
 
   await db.project.update({
