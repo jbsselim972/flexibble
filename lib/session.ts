@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
       const encodedToken = jsonwebtoken.sign(
         {
           ...token,
-          iss: "grafbase",
+          iss: "database",
           exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30,
         },
         secret
@@ -46,22 +46,24 @@ export const authOptions: NextAuthOptions = {
           ...session,
           user: {
             ...session.user,
-            ...data?.user,
+            ...data,
           },
         };
+
+        // console.log("[AUTH_SESSION]:", newSession);
         return newSession;
       } catch (error) {
-        console.error("Error retrieving user data");
+        console.error("[AUTH_SESSION_ERROR]:Error retrieving user data");
         return session;
       }
     },
     async signIn({ user }: { user: AdapterUser | User }) {
       try {
-        const userExists = (await getUser(user?.email as string)) as {
+        const userExists = (await getUser(user?.email)) as {
           user?: UserProfile;
         };
 
-        if (!userExists.user) {
+        if (!userExists) {
           await createUser(
             user.name as string,
             user.email as string,
@@ -70,7 +72,7 @@ export const authOptions: NextAuthOptions = {
         }
         return true;
       } catch (error: any) {
-        console.error(error);
+        console.error("[NEXTAUTH_CALLBACK_ERROR_SIGNIN]", error);
         return false;
       }
     },
