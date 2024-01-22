@@ -3,6 +3,7 @@ import Categories from "@/components/Categories";
 import LoadMore from "@/components/LoadMore";
 import ProjectCard from "@/components/ProjectCard";
 import { fetchAllProjects } from "@/lib/actions";
+import { Project, User } from "@prisma/client";
 
 type ProjectsSearch = {
   projectSearch: {
@@ -28,9 +29,9 @@ export const dynamicParams = true;
 export const revalidate = 0;
 
 const Home = async ({ searchParams: { category, endcursor } }: Props) => {
-  const data = (await fetchAllProjects(category, endcursor)) as ProjectsSearch;
-  const pagination = data?.projectSearch?.pageInfo;
-  const projectsToDisplay = data?.projectSearch?.edges || [];
+  const data = await fetchAllProjects(category, endcursor);
+  // const pagination = data?.projectSearch?.pageInfo;
+  const projectsToDisplay = data || [];
   if (projectsToDisplay.length === 0) {
     return (
       <section className="flexStart flex-col paddings">
@@ -46,24 +47,27 @@ const Home = async ({ searchParams: { category, endcursor } }: Props) => {
     <section className="flex-start flex-col paddings mb-16">
       <Categories />
       <section className="projects-grid">
-        {projectsToDisplay.map(({ node }: { node: ProjectInterface }) => (
-          <ProjectCard
-            key={node.id}
-            id={node.id}
-            image={node.image}
-            title={node.title}
-            name={node?.createdBy?.name}
-            avatarUrl={node?.createdBy?.avatarUrl}
-            userId={node?.createdBy?.id}
-          />
-        ))}
+        {projectsToDisplay.map(
+          (project) =>
+            project && (
+              <ProjectCard
+                key={project?.id}
+                id={project?.id}
+                image={project?.image}
+                title={project?.title}
+                name={project?.createdBy?.name}
+                avatarUrl={project?.createdBy?.avatarUrl}
+                userId={project?.createdBy?.id}
+              />
+            )
+        )}
       </section>
-      <LoadMore
+      {/* <LoadMore
         startCursor={pagination.startCursor}
         endCursor={pagination.endCursor}
         hasPreviousPage={pagination.hasPreviousPage}
         hasNextPage={pagination.hasNextPage}
-      />
+      /> */}
     </section>
   );
 };
