@@ -1,5 +1,10 @@
-import { ProjectInterface, UserProfile } from "@/common.types";
+import {
+  ProjectInterface,
+  UserWithProjects,
+  UserProfile,
+} from "@/common.types";
 import { getUserProjects } from "@/lib/actions";
+import { Project } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -9,9 +14,9 @@ type Props = {
 };
 
 const RelatedProjects = async ({ userId, projectId }: Props) => {
-  const result = (await getUserProjects(userId)) as { user?: UserProfile };
-  const filteredProjects = result?.user?.projects?.edges?.filter(
-    ({ node }: { node: ProjectInterface }) => node?.id !== projectId
+  const result = (await getUserProjects(userId)) as UserWithProjects;
+  const filteredProjects = result?.projects?.filter(
+    (project: Project) => project?.id !== projectId
   );
 
   if (filteredProjects?.length === 0) return null;
@@ -19,27 +24,27 @@ const RelatedProjects = async ({ userId, projectId }: Props) => {
   return (
     <section className="flex flex-col mt-32 w-full">
       <div className="flexBetween">
-        <p className="text-base font-bold">More by {result?.user?.name}</p>
+        <p className="text-base font-bold">More by {result?.name}</p>
         <Link
           className="text-primary-purple text-base"
-          href={`/profile/${result?.user?.id}`}
+          href={`/profile/${result?.id}`}
         >
           View all
         </Link>
       </div>
 
       <div className="related_projects-grid">
-        {filteredProjects?.map(({ node }: { node: ProjectInterface }) => (
+        {filteredProjects?.map((project) => (
           <div
             className="flexCenter related_project-card drop-shadow-card"
-            key={node?.id}
+            key={project?.id}
           >
             <Link
               className="flexCenter group relative h-full w-full"
-              href={`/projects/${node?.id}`}
+              href={`/projects/${project?.id}`}
             >
               <Image
-                src={node?.image}
+                src={project?.image}
                 width={414}
                 height={314}
                 className="w-full h-full object-cover rounded-2xl"
@@ -47,7 +52,7 @@ const RelatedProjects = async ({ userId, projectId }: Props) => {
               />
 
               <div className="hidden group-hover:flex related_project-card_title">
-                <p className="w-full">{node?.title}</p>
+                <p className="w-full">{project?.title}</p>
               </div>
             </Link>
           </div>

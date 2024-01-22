@@ -6,19 +6,15 @@ import { getProjectDetails } from "@/lib/actions";
 import Modal from "@/components/Modal";
 // import ProjectActions from "@/components/ProjectActions"
 import RelatedProjects from "@/components/RelatedProjects";
-import { ProjectInterface } from "@/common.types";
+import { ProjectInterface, ProjectWithUserInfo } from "@/common.types";
 import ProjectActions from "@/components/ProjectActions";
 
 const Project = async ({ params: { id } }: { params: { id: string } }) => {
   const session = await getCurrentUser();
-  const result = (await getProjectDetails(id)) as {
-    project?: ProjectInterface;
-  };
+  const projectDetails = (await getProjectDetails(id)) as ProjectWithUserInfo;
 
-  if (!result?.project)
+  if (!projectDetails)
     return <p className="no-result-text">Failed to fetch project info</p>;
-
-  const projectDetails = result?.project;
 
   const renderLink = () => `/profile/${projectDetails?.createdBy?.id}`;
 
@@ -77,7 +73,7 @@ const Project = async ({ params: { id } }: { params: { id: string } }) => {
 
         <div className="flex flex-wrap mt-5 gap-5">
           <Link
-            href={projectDetails?.githubUrl}
+            href={projectDetails.githubUrl ?? "#"}
             target="_blank"
             rel="noreferrer"
             className="flexCenter gap-2 tex-sm font-medium text-primary-purple"
@@ -86,7 +82,7 @@ const Project = async ({ params: { id } }: { params: { id: string } }) => {
           </Link>
           <Image src="/dot.svg" width={4} height={4} alt="dot" />
           <Link
-            href={projectDetails?.liveSiteUrl}
+            href={projectDetails.liveSiteUrl ?? "#"}
             target="_blank"
             rel="noreferrer"
             className="flexCenter gap-2 tex-sm font-medium text-primary-purple"

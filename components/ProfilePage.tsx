@@ -1,12 +1,13 @@
-import { ProjectInterface, UserProfile } from "@/common.types";
+import { UserWithProjects } from "@/common.types";
 import Image from "next/image";
 
 import Link from "next/link";
 import Button from "./Button";
 import ProjectCard from "./ProjectCard";
+import { Project } from "@prisma/client";
 
 type Props = {
-  user: UserProfile;
+  user: UserWithProjects;
 };
 
 const ProfilePage = ({ user }: Props) => (
@@ -14,7 +15,7 @@ const ProfilePage = ({ user }: Props) => (
     <section className="flexBetween max-lg:flex-col gap-10 w-full">
       <div className="flex items-start flex-col w-full">
         <Image
-          src={user?.avatarUrl}
+          src={user?.avatarUrl ?? ""}
           width={100}
           height={100}
           className="rounded-full"
@@ -38,9 +39,9 @@ const ProfilePage = ({ user }: Props) => (
         </div>
       </div>
 
-      {user?.projects?.edges?.length > 0 ? (
+      {user?.projects && user?.projects?.length > 0 ? (
         <Image
-          src={user?.projects?.edges[0]?.node?.image}
+          src={user?.projects[0]?.image ?? ""}
           alt="project image"
           width={739}
           height={554}
@@ -61,12 +62,12 @@ const ProfilePage = ({ user }: Props) => (
       <p className="w-full text-left text-lg font-semibold">Recent Work</p>
 
       <div className="profile_projects">
-        {user?.projects?.edges?.map(({ node }: { node: ProjectInterface }) => (
+        {user?.projects?.map((project: Project) => (
           <ProjectCard
-            key={`${node?.id}`}
-            id={node?.id}
-            image={node?.image}
-            title={node?.title}
+            key={`${project?.id}`}
+            id={project?.id}
+            image={project?.image}
+            title={project?.title}
             name={user.name}
             avatarUrl={user.avatarUrl}
             userId={user.id}
