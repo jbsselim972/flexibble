@@ -1,3 +1,4 @@
+import { Project, User as UserPrisma } from "@prisma/client";
 import { User, Session } from "next-auth";
 
 export type FormState = {
@@ -61,3 +62,11 @@ export interface ProjectForm {
   githubUrl: string;
   category: string;
 }
+
+export type ProjectWithUserInfo =
+  | (Project & { createdBy: UserPrisma })
+  | undefined;
+
+export type UserWithProjects =
+  | (UserPrisma & { projects: Project[] })
+  | undefined;
